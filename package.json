@@ -1,0 +1,11 @@
+{
+  "name": "collider-js",
+  "version": "1.0.0",
+  "description": "Fast visual effect of particle`s net",
+  "repository": "https://github.com/AxelUser/ColliderJS.git",
+  "author": "Alexey Maltsev",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
