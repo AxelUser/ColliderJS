@@ -6,6 +6,9 @@
   "author": "Alexey Maltsev",
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "webpack": "^3.8.1"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
   }
 }
