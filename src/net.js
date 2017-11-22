@@ -1,6 +1,7 @@
 import Vector from "./vector";
 import Particle from "./particle";
 import GridCell from "./cell";
+import ParticleGrid from "./grid";
 
 export default function($canvas, enableDebug){
     'use strict';
@@ -161,8 +162,29 @@ export default function($canvas, enableDebug){
         initGrid();
     };
 
+    var particlesFactory = function(grid) {
+        var count = width * height / 6000;
+        var x = 0,
+            y = 0;
+        for(var i = 0; i < count; i++){
+            x = Math.random() * window.innerWidth;
+            y = Math.random() * window.innerHeight;
+
+            var particle = new Particle(i, x, y);
+            particle.velocity.x = Math.random() -0.5;
+            particle.velocity.y = Math.random() -0.5;
+            particle.velocity.nor();
+            particle.speed = 2;
+            particles.push(particle);
+        }
+
+        return particles;
+    }
+    
     var initGrid = function() {
-        grid = createSnowflakeParticleGrid(width, height, particleSpeed, enableDebug);
+        grid = new ParticleGrid(width, height);
+        grid.initGrid();
+        grid.addParticles(particlesFactory);
         particles = grid.getAllParticles();
     }
 
