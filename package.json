@@ -6,7 +6,8 @@
   "author": "Alexey Maltsev",
   "license": "MIT",
   "devDependencies": {
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "webpack-copy-after-build-plugin": "^1.0.1"
   },
   "scripts": {
     "build": "webpack --config webpack.config.js"
