@@ -1,7 +1,6 @@
 import Vector from "./vector";
-import Particle from "./particle";
 
-export default function(id, x, y){
+export default function Particle(id, x, y){
     this.id = id;
     this.position = new Vector(x, y);
     this.velocity = new Vector();

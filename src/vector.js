@@ -1,4 +1,4 @@
-export default function(x, y){
+export default function Vector(x, y){
     'use strict';
 
     this.x = x || 0;

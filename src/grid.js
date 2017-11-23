@@ -1,7 +1,7 @@
 import Vector from "./vector";
 import GridCell from "./cell";
 
-export default function(width, height, options) {
+export default function Grid(width, height, options) {
     'use strict';
     
     var opt = options || {};

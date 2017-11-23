@@ -1,6 +1,6 @@
 import Vector from "./vector";
 
-export default function(id, rowIndex, colIndex, posLeftTop, width, height, maxJoins) {
+export default function GridCell(id, rowIndex, colIndex, posLeftTop, width, height, maxJoins) {
     'use strict';
 
     this.isCustom = false;

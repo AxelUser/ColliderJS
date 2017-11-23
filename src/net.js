@@ -3,7 +3,7 @@ import Particle from "./particle";
 import GridCell from "./cell";
 import ParticleGrid from "./grid";
 
-export default function($canvas, enableDebug){
+export default function ParticleNet($canvas, enableDebug){
     'use strict';
   
     var darkTriangleColor = "#7A0006",
