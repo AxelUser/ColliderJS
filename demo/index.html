@@ -6,11 +6,10 @@
         <link rel="stylesheet" href="css/style.css">
       </head>
     <body>
-        <canvas width="100" height="100" class="particle-net">your browser sucks</canvas>
+        <canvas width="100" height="100" id="particle-net">your browser sucks</canvas>
     </body>
     <script src="js/collider.js"></script>
     <script>
-        var $canvas = document.querySelector('.particle-net');
-        var net = new ColliderJS($canvas, false);
+        var net = ColliderJS.createSimple('particle-net');
     </script>
 </html>

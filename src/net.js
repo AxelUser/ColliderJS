@@ -3,7 +3,7 @@ import Particle from "./particle";
 import GridCell from "./cell";
 import ParticleGrid from "./grid";
 
-export default function ParticleNet($canvas, enableDebug){
+export default function ParticleNet(canvas, enableDebug){
     'use strict';
   
     var darkTriangleColor = "#7A0006",
@@ -26,6 +26,7 @@ export default function ParticleNet($canvas, enableDebug){
     var grid = {};
 
     //for debug
+    //todo enableDebug
     var showGrid = enableDebug || false;
 
     var showParticlesWithError = enableDebug || false;
@@ -103,12 +104,12 @@ export default function ParticleNet($canvas, enableDebug){
     }
 
     var init = function(){
-        if(!$canvas){
+        if(!canvas){
             return false;
         }
 
         time = getCurrentTime();
-        context = $canvas.getContext('2d');
+        context = canvas.getContext('2d');
         addEvent(window, 'resize', initCanvas);
 
         if(stopOnBlur) {
@@ -156,8 +157,8 @@ export default function ParticleNet($canvas, enableDebug){
     };
 
     var initCanvas = function(){
-        width = $canvas.width = window.innerWidth;
-        height = $canvas.height = window.innerHeight;
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
         center = new Vector(width/2, height/2);
         initGrid();
     };

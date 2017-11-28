@@ -1,1 +1,901 @@
-!function(t){function i(s){if(e[s])return e[s].exports;var n=e[s]={i:s,l:!1,exports:{}};return t[s].call(n.exports,n,n.exports,i),n.l=!0,n.exports}var e={};i.m=t,i.c=e,i.d=function(t,e,s){i.o(t,e)||Object.defineProperty(t,e,{configurable:!1,enumerable:!0,get:s})},i.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return i.d(e,"a",e),e},i.o=function(t,i){return Object.prototype.hasOwnProperty.call(t,i)},i.p="",i(i.s=2)}([function(t,i,e){"use strict";function s(t,i){this.x=t||0,this.y=i||0;var e,s;this.add=function(t){return this.x+=t.x,this.y+=t.y,this},this.sub=function(t){return this.x-=t.x,this.y-=t.y,this},this.nor=function(){var t=this.len();return t>0&&(this.x=this.x/t,this.y=this.y/t),this},this.dot=function(t){return this.x*t.x+this.y*t.y},this.len2=function(){return this.dot(this)},this.len=function(){return Math.sqrt(this.len2())},this.mul=function(t){return"object"==typeof t?(this.x*=t.x,this.y*=t.y):(this.x*=t,this.y*=t),this},this.copyFrom=function(t){return this.x=t.x,this.y=t.y,this},this.distance=function(t){return e=this.x-t.x,s=this.y-t.y,Math.sqrt(e*e+s*s)}}i.a=s},function(t,i,e){"use strict";function s(t,i,e,s,o,h,r){this.isCustom=!1,this.isSelected=!1,this.id=t||0,this.width=o||0,this.height=h||0,this.rowIndex=i||0,this.colIndex=e||0,this.maxJoins=r,this.top=s.y,this.bottom=s.y+h,this.left=s.x,this.right=s.x+o,this.center=new n.a(this.left+this.width/2,this.top+this.height/2),this.hasError=!1,this.particles=[],this.neighbors=[],this.setParticles=function(t){self=this,this.particles=[].concat(t.map(function(t){return t.cell=self,t}))},this.addParticle=function(t){t.cell=this,this.particles.push(t)},this.check=function(){for(var t=0;t<this.particles.length;t++){var i=this.particles[t].position.x,e=this.particles[t].position.y;if(Math.ceil(i)<this.left||Math.floor(i)>this.right||Math.ceil(e)<this.top||Math.floor(e)>this.bottom)return!1}return!0},this.removeSelfFromNeighbors=function(t){for(var i=0;i<this.neighbors.length;i++){var e=this.neighbors[i];e.neighbors=e.neighbors.filter(function(i){return!(void 0==t||!t(i))||this.id!=i.id},this)}},this.removeGoneParticles=function(){for(var t=[],i=[],e=0,s=0,n=0;n<this.particles.length;n++)e=Math.round(this.particles[n].position.x),s=Math.round(this.particles[n].position.y),e<this.left||e>this.right||s<this.top||s>this.bottom?(this.particles[n].cell=null,t.push(this.particles[n]),null!=this.particles[n].onLeaving&&this.particles[n].onLeaving(this.particles[n])):i.push(this.particles[n]);return i.length<this.particles.length&&this.setParticles(i),t}}i.a=s;var n=e(0)},function(t,i,e){"use strict";Object.defineProperty(i,"__esModule",{value:!0});var s=e(3);window.ColliderJS=s.a},function(t,i,e){"use strict";function s(t,i){var e,s,r,l,c,a,u,d,f,p,g=[],v=0,x=0,w={},y=i||!1,b=i||!1,m=i||!1,C=!1,P=i||!1,F=!0,M=i||!1,A=null;this.setDebugMode=function(t){y=t,b=t,m=t,P=t,M=t};var I=function(){document[f]?R():E()},S=function(t){t.ctrlKey&&(F?R():E())},k=function(t){null!=A&&(A.isSelected=!1,A.neighbors.forEach(function(t){t.isSelected=!1}));var i=w.getCellForPosition(t.clientX,t.clientY);i.isSelected=!0,i.neighbors.forEach(function(t){t.isSelected=!0}),A=i},O=function(){void 0!==document.hidden?(f="hidden",p="visibilitychange"):void 0!==document.msHidden?(f="msHidden",p="msvisibilitychange"):void 0!==document.webkitHidden&&(f="webkitHidden",p="webkitvisibilitychange"),void 0===document[f]?(console.log("This footage requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API. Will be using fallback."),j(window,"focus",E),j(window,"blur",R)):j(document,p,I)},E=function(){F||(F=!0,H())},R=function(){F=!1},H=function(){!F||m&&C||(x=L(),c=(x-v)/100,v=x,c>.2&&(c=.2),J(c),N(),G(H))},q=function(){s=t.width=window.innerWidth,r=t.height=window.innerHeight,l=new n.a(s/2,r/2),W()},T=function(t){for(var i=s*r/6e3,e=0,n=0,h=0;h<i;h++){e=Math.random()*window.innerWidth,n=Math.random()*window.innerHeight;var l=new o.a(h,e,n);l.velocity.x=Math.random()-.5,l.velocity.y=Math.random()-.5,l.velocity.nor(),l.speed=2,g.push(l)}return g},W=function(){w=new h.a(s,r),w.initGrid(),w.addParticles(T),g=w.getAllParticles()},j=function(t,i,e){null!=t&&(t.addEventListener?t.addEventListener(i,e,!1):t.attachEvent?t.attachEvent("on"+i,e):t["on"+i]=e)},N=function(){for(e.clearRect(0,0,s,r),e.lineWidth=1.5,d={},a=0;a<g.length;a++)for(d=g[a],e.strokeStyle="rgba(255, 255, 255, "+d.linkAlpha.toPrecision(3)+")",b&&d.hasError?(C=!0,e.fillStyle="red",e.fillRect(d.position.x-2,d.position.y-2,5,5)):(e.beginPath(),e.fillStyle="rgba(255, 255, 255, "+d.jointAlpha.toPrecision(3)+")",e.arc(d.position.x,d.position.y,d.radius,0,2*Math.PI),e.fill()),u=0;u<d.childs.length;u++)e.strokeStyle="rgba(255, 255, 255, "+d.connectionsMap[d.childs[u].id+""].toPrecision(3)+")",e.beginPath(),e.moveTo(d.position.x,d.position.y),e.lineTo(d.childs[u].position.x,d.childs[u].position.y),e.stroke();y&&(e.strokeStyle="green",e.fillStyle="rgba(255, 255, 255, 0.5)",w.iterateCells(function(t){e.font="10px Arial",e.fillText(t.id,t.left,t.top+10),e.rect(t.left,t.top,t.width,t.height),t.isSelected&&(e.fillStyle="rgba(0, 0, 255, 0.3)",e.fillRect(t.left,t.top,t.width,t.height),e.fillStyle="rgba(255, 255, 255, 0.5)"),b&&t.hasError&&(e.fillStyle="rgba(255, 0, 0, 0.2)",e.fillRect(t.left,t.top,t.width,t.height),e.fillStyle="rgba(255, 255, 255, 0.5)")}),e.stroke())},G=function(t){window.requestAnimationFrame?window.requestAnimationFrame(t):window.webkitRequestAnimationFrame?window.webkitRequestAnimationFrame(t):window.mozRequestAnimationFrame?window.mozRequestAnimationFrame(t):window.setTimeout(t,1e3/60)},J=function(t){for(a=0;a<g.length;a++)g[a].update(t),g[a].position.x>s&&(g[a].velocity.x*=-1,g[a].position.x=s),g[a].position.x<0&&(g[a].velocity.x*=-1,g[a].position.x=0),g[a].position.y>r&&(g[a].velocity.y*=-1,g[a].position.y=r),g[a].position.y<0&&(g[a].velocity.y*=-1,g[a].position.y=0);w.update()},L=function(){return(new Date).getTime()};!function(){if(!t)return!1;v=L(),e=t.getContext("2d"),j(window,"resize",q),O(),M&&j(window,"dblclick",k),P&&j(window,"click",S),q(),H()}()}i.a=s;var n=e(0),o=e(4),h=(e(1),e(5))},function(t,i,e){"use strict";function s(t,i,e){this.id=t,this.position=new n.a(i,e),this.velocity=new n.a,this.speed=0,this.parentId=null,this.connectionsMap={},this.childs=[],this.linked=!1,this.distance=!1,this.alpha=.3,this.radius=2,this.hasError=!1,this.connectionsAlphaInc=.01,this.cell=null,this.isCustom=!1,this.jointAlpha=.8,this.linkAlpha=this.alpha,this.linkToParentAlpha=0;var s=new n.a,o=0;this.riseError=function(){this.hasError=!0,this.cell.hasError=!0},this.update=function(t){s=s.copyFrom(this.velocity),s.mul(this.speed*t),this.position.add(s),this.jointAlpha=.8,this.linkAlpha=this.alpha},this.addChilds=function(t){for(var i=0,e=null,s={},n=[],o=0;o<t.length;o++)e=t[o],i=null!=this.connectionsMap[e.id+""]?this.connectionsMap[e.id+""]+this.connectionsAlphaInc:0,s[e.id+""]=i<=.3?i:.3,n.push(e);this.connectionsMap=s,this.childs=n},this.removeChild=function(t){for(o=0;o<this.childs.length;o++)this.childs[o]===t&&this.childs.splice(o,1)},this.onLeaving=null}i.a=s;var n=e(0)},function(t,i,e){"use strict";function s(t,i,e){function s(t){for(var i=[],e=t.cell,s=0;s<e.neighbors.length;s++){var n=e.neighbors[s];i=i.concat(n.particles.filter(function(i){return null==i.connectionsMap[t.id+""]}))}return 0==i.length&&null!=c&&(i=c(t)),i}var h=e||{};this.cells=[],this.cellFixedWidth=32,this.cellFixedHeight=32,this.debugMode=h.enableDebug||!1,this.rowsCount=0,this.colsCount=0,this.width=t,this.height=i,this.cellsSearchRadius=1,this.cellsIgnoreRadius=0,this.maxJoins=h.maxJoins||1,this.maxNeighborsToConnect=5,this.distanceErrorThreshold=200;var r=h.onAfterGridCreation,l=h.trianglesPointsFactory,c=h.onRequestAdditionalNeighbors;this.getCellForPosition=function(t,i){var e=Math.floor(t/this.cellFixedWidth),s=Math.floor(i/this.cellFixedHeight);return this.cells[s][e]},this.getCellForParticle=function(t){Math.floor(t.position.x/this.cellFixedWidth),Math.floor(t.position.y/this.cellFixedHeight);return this.getCellForPosition(t.position.x,t.position.y)},this.getTrianglesPoints=function(){return l?l():null},this.initGrid=function(){var t=0;this.cells=[],this.rowsCount=0;for(var i=0;i<this.height;i+=this.cellFixedHeight,this.rowsCount++){this.colsCount=0,this.cells.push([]);for(var e=0;e<this.width;e+=this.cellFixedWidth,this.colsCount++,t++){var s=new n.a(e,i),h=i+this.cellFixedHeight<=this.height?this.cellFixedHeight:this.height-i,l=e+this.cellFixedWidth<=this.width?this.cellFixedWidth:this.width-e;this.cells[this.rowsCount].push(new o.a(t,this.rowsCount,this.colsCount,s,l,h,this.maxJoins))}}this.initNeighborsForCells(),r&&r(this)},this.addParticles=function(t){var i=t(this);console.log("Particles: "+i.length);for(var e=0;e<i.length;e++){this.getCellForParticle(i[e]).addParticle(i[e])}},this.guessOffset=function(t,i,e){var s=0,n=0;return t<e.left?s--:t>e.right&&s++,i<e.top?n--:i>e.bottom&&n++,{xOffset:s,yOffset:n}},this.updateParticlesInCells=function(){for(var t=0;t<this.cells.length;t++)for(var i=0;i<this.cells[t].length;i++)for(var e=this.cells[t][i],s=e.removeGoneParticles(),n=0;n<s.length;n++){var o=s[n],h=o.position.x,r=o.position.y,l=this.guessOffset(h,r,e);l.yOffset=t+l.yOffset>=0&&t+l.yOffset<this.rowsCount?l.yOffset:0;var c=t+l.yOffset;l.xOffset=i+l.xOffset>=0&&i+l.xOffset<this.colsCount?l.xOffset:0;var a=i+l.xOffset;this.cells[c][a].addParticle(o)}},this.initNeighborsForCells=function(t,i,e){t=t||this.cellsIgnoreRadius,i=i||this.cellsSearchRadius,e=e||!0;var s=function(t){for(var i,e,s=t.length;0!==s;)e=Math.floor(Math.random()*s),s-=1,i=t[s],t[s]=t[e],t[e]=i;return t};this.iterateCells(function(n,o){var h=o.getCellsNeighbors(t,i,n,o);n.neighbors=e?s(h):h})},this.getCellsNeighbors=function(t,i,e,s){for(var n=[],o=[e.rowIndex-t,e.rowIndex+t],h=[e.colIndex-t,e.colIndex+t],r=e.rowIndex-i;r<=e.rowIndex+i&&r<s.rowsCount;r++)for(var l=e.colIndex-i;l<=e.colIndex+i&&l<s.colsCount;l++)r>=0&&l>=0&&(r<o[0]||r>o[1]||l<h[0]||l>h[1])&&(r==e.rowIndex&&l==e.colIndex||n.push(s.cells[r][l]));return n},this.connectParticles=function(){for(var t=0;t<this.cells.length;t++)for(var i=this.cells[t],e=0;e<i.length;e++)for(var n=i[e],o=0;o<n.particles.length;o++){var h=n.particles[o];h.addChilds(s(h).slice(0,n.maxJoins))}},this.iterateCells=function(t){for(var i=0;i<this.cells.length;i++)for(var e=this.cells[i],s=0;s<e.length;s++){var n=e[s];t(n,this)}},this.getAllParticles=function(){var t=[];return this.iterateCells(function(i){t=t.concat(i.particles)}),t},this.update=function(){this.updateParticlesInCells(),this.connectParticles()}}i.a=s;var n=e(0),o=e(1)}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = Vector;
+function Vector(x, y){
+    'use strict';
+
+    this.x = x || 0;
+    this.y = y || 0;
+
+    var dx, dy;
+
+    this.add = function(v){
+        this.x += v.x;
+        this.y += v.y;
+        return this;
+    };
+
+    this.sub = function(v){
+        this.x -= v.x;
+        this.y -= v.y;
+        return this;
+    };
+
+    this.nor = function(){
+        var d = this.len();
+        if(d > 0) {
+            this.x = this.x / d;
+            this.y = this.y / d;
+        }
+        return this;
+    };
+
+    this.dot = function(v){
+        return this.x * v.x + this.y * v.y;
+    };
+
+
+    this.len2 = function(){
+        return this.dot(this);
+    };
+
+    this.len = function(){
+        return Math.sqrt(this.len2());
+    };
+
+    this.mul = function(v){
+        if(typeof v === 'object'){
+            this.x *= v.x;
+            this.y *= v.y;
+        } else {
+            this.x *= v;
+            this.y *= v;
+        }
+
+        return this;
+    };
+
+    this.copyFrom = function(v) {
+        this.x = v.x;
+        this.y = v.y;
+        return this;
+    };
+
+    this.distance = function(v){
+        dx = this.x - v.x;
+        dy = this.y - v.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    };
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__grid__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tools__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__render__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mover__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__particle__ = __webpack_require__(7);
+
+
+
+
+
+
+
+
+
+function Collider(canvasID, options){
+    
+    /**Canvas context */
+    var __ctx;
+    var __canvas;
+
+    var __width = 0;
+    var __height = 0;
+
+    var __grid = null;
+    var __particles = [];
+
+    var __fn = {};
+
+    var newTime = 0;
+    var savedTime = 0;
+    
+    var __defs = {
+        grid: {
+            //sizes
+            cellFixedWidth: 32,
+            cellFixedHeight: 32,
+
+            //connections
+            cellsSearchRadius: 1,
+            cellsIgnoreRadius: 0,
+            maxConnections: 1,
+
+            //particles settings
+            particleSpeed: 2,
+
+            //optimizations
+            stopOnBlur: true
+        },
+        handlers: {
+            onAfterGridCreation: null,
+            particlesFactory: null,
+        },
+        debug: {
+            showGrid: false,
+            pauseOnCtrlClick: false,
+            selectOnDblClick: false
+        }
+
+    };
+
+    if(options != null) {
+        __defs = __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].deepExtend(__defs, options)
+    }
+
+    //todo: check for concurrency issues
+    __fn.addParticles = function(particlesFactory){
+        var p = particlesFactory(__grid);
+        __grid.addParticles(p);
+        __particles = __grid.getAllParticles();
+    };
+
+    __fn.pushParticle = function(x, y){
+        
+    };
+
+    __fn.update = function(delta) {
+        __WEBPACK_IMPORTED_MODULE_3__mover__["a" /* default */].bounce(__particles, delta, __grid);
+        __grid.update();
+    };    
+
+    __fn.loop = function() {
+        newTime = __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].getCurrentTime();
+        var delta = (newTime - savedTime) / 100;
+        savedTime = newTime;
+
+        if(delta > 0.2){
+            delta = 0.2;
+        }
+
+        __fn.update(delta);
+        __fn.draw();
+        __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].getAnimationFrame(__fn.loop);
+    }
+
+    __fn.draw = function() {
+        Object(__WEBPACK_IMPORTED_MODULE_2__render__["a" /* default */])(__ctx, __width, __height, __particles, __grid, __defs);
+    };
+
+    __fn.initCanvas = function() {        
+        __ctx = __canvas.getContext('2d');
+
+        //todo: add fullscreen setting
+        __width = __canvas.width = window.innerWidth;
+        __height = __canvas.height = window.innerHeight;
+    };
+
+    __fn.initGrid = function() {
+        __grid = new __WEBPACK_IMPORTED_MODULE_0__grid__["a" /* default */](__width, __height);
+        __grid.initGrid();
+        if(__defs.handlers.particlesFactory != null) {
+            __grid.addParticles(__defs.handlers.particlesFactory);
+        }        
+        __particles = __grid.getAllParticles();
+    };
+
+    __fn.initCollider = function() {
+        __canvas = document.getElementById(canvasID);
+        __fn.initCanvas();
+        __fn.initGrid();
+        __fn.loop();
+    };
+
+    this.pushParticle = __fn.pushParticle;
+    this.addParticles = __fn.addParticles;
+
+    __fn.initCollider();
+}
+
+Collider.createSimple = function(canvasID){
+    var o = {
+        handlers: {
+            particlesFactory: function(grid) {
+                var particles = [];
+                var count = 150;
+                var x = 0,
+                    y = 0;
+                for(var i = 0; i < count; i++){
+                    x = Math.random() * window.innerWidth;
+                    y = Math.random() * window.innerHeight;
+        
+                    var particle = new __WEBPACK_IMPORTED_MODULE_4__particle__["a" /* default */](i, x, y);
+                    particle.velocity.x = Math.random() -0.5;
+                    particle.velocity.y = Math.random() -0.5;
+                    particle.velocity.nor();
+                    particle.speed = 2;
+                    particles.push(particle);
+                }
+        
+                return particles;
+            }
+        }
+    }
+
+    return new Collider(canvasID, o);
+}
+
+window.ColliderJS = Collider;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = Grid;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cell__ = __webpack_require__(3);
+
+
+
+function Grid(width, height, options) {
+    'use strict';
+    
+    var opt = options || {};
+
+    this.cells = [];
+
+    this.cellFixedWidth = 32;
+    this.cellFixedHeight = 32;
+
+    this.debugMode = opt.enableDebug || false;
+
+    this.rowsCount = 0;
+    this.colsCount = 0;
+
+    this.width = width;
+    this.height = height;
+
+    this.cellsSearchRadius = 1;
+    this.cellsIgnoreRadius = 0;
+    this.maxJoins = opt.maxJoins || 1;
+    this.maxNeighborsToConnect = 5;
+    
+    this.distanceErrorThreshold = 200;
+
+    // Extesions
+    var onAfterGridCreationCb = opt.onAfterGridCreation;
+    var getTrianglesPointsCb = opt.trianglesPointsFactory;
+    var onRequestAdditionalNeighborsCb = opt.onRequestAdditionalNeighbors;
+
+    this.getCellForPosition = function(x, y){
+        var xIndex = Math.floor(x / this.cellFixedWidth);
+        var yIndex = Math.floor(y / this.cellFixedHeight);
+        return this.cells[yIndex][xIndex];
+    }
+
+    this.getCellForParticle = function (particle) {
+        var xIndex = Math.floor(particle.position.x / this.cellFixedWidth);
+        var yIndex = Math.floor(particle.position.y / this.cellFixedHeight);
+        return this.getCellForPosition(particle.position.x, particle.position.y);
+    }
+
+    this.getTrianglesPoints = function() {
+        if(getTrianglesPointsCb){
+            return getTrianglesPointsCb();
+        } else {
+            return null;
+        }
+    }
+
+    this.initGrid = function () {
+        var id = 0;
+        this.cells = [];
+        this.rowsCount = 0;
+
+        for(var sumHeight = 0; sumHeight < this.height; sumHeight += this.cellFixedHeight, this.rowsCount++){
+            this.colsCount = 0;
+            this.cells.push([]);
+            for(var sumWidth = 0; sumWidth < this.width; sumWidth += this.cellFixedWidth, this.colsCount++, id++){
+                var pos = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](sumWidth, sumHeight);
+                var h = sumHeight + this.cellFixedHeight <= this.height? this.cellFixedHeight: this.height - sumHeight;
+                var w = sumWidth + this.cellFixedWidth <= this.width? this.cellFixedWidth: this.width - sumWidth;
+                this.cells[this.rowsCount].push(new __WEBPACK_IMPORTED_MODULE_1__cell__["a" /* default */](id, this.rowsCount, this.colsCount, pos, w, h, this.maxJoins));
+            }
+        }
+        
+        this.initNeighborsForCells();
+
+        if(onAfterGridCreationCb){
+            onAfterGridCreationCb(this);
+        }
+    }
+
+    this.addParticles = function(particleFactoryCb) {
+        var particles = particleFactoryCb(this);
+        console.log("Particles: " + particles.length);
+        for(var i = 0; i < particles.length; i++) {
+            var cell = this.getCellForParticle(particles[i]);
+            cell.addParticle(particles[i]);
+        }
+    }
+
+    this.guessOffset = function(px, py, cell) {
+        var xOffset = 0;
+        var yOffset = 0;        
+
+        if(px < cell.left) {
+            xOffset--;
+        } else if (px > cell.right) {
+            xOffset++;
+        }
+
+        if(py < cell.top) {
+            yOffset--;
+        } else if (py > cell.bottom) {
+            yOffset++;
+        }
+
+        return {
+            xOffset: xOffset,
+            yOffset: yOffset
+        };
+    }
+
+    this.updateParticlesInCells = function () {
+        for (var i = 0; i < this.cells.length; i++) {
+            for (var j = 0; j < this.cells[i].length; j++) {
+                var cell = this.cells[i][j];
+                var removed = cell.removeGoneParticles();
+                for (var r = 0; r < removed.length; r++) {
+                    var rp = removed[r];
+                    var rpPosX = rp.position.x;
+                    var rpPosY = rp.position.y;
+                    var o = this.guessOffset(rpPosX, rpPosY, cell);
+                    
+                    o.yOffset = (i + o.yOffset) >= 0 && (i + o.yOffset) < this.rowsCount? o.yOffset: 0;
+                    var yIndex = i + o.yOffset;
+                    o.xOffset = (j + o.xOffset) >= 0 && (j + o.xOffset) < this.colsCount? o.xOffset: 0;
+                    var xIndex = j + o.xOffset;                    
+                    
+                    this.cells[yIndex][xIndex].addParticle(rp);
+                }                
+            }
+        }
+    }
+
+    this.initNeighborsForCells = function (minR, maxR, shouldShuffle) {
+        minR = minR || this.cellsIgnoreRadius;
+        maxR = maxR || this.cellsSearchRadius;
+        shouldShuffle = shouldShuffle || true;
+
+        var shuffle = function(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+            while (0 !== currentIndex) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+          
+            return array;
+        }
+        this.iterateCells(function(cell, grid) {
+            var neighbors = grid.getCellsNeighbors(minR, maxR, cell, grid);
+
+            cell.neighbors = shouldShuffle? shuffle(neighbors): neighbors;
+        });
+    }
+
+    this.getCellsNeighbors = function(minR, maxR, cell, grid) {
+        var neighbors = [];
+        var ignoreY = [cell.rowIndex - minR, cell.rowIndex + minR];
+        var ignoreX = [cell.colIndex - minR, cell.colIndex + minR];
+        for (var yIndex = cell.rowIndex - maxR; yIndex <= (cell.rowIndex + maxR) && yIndex < grid.rowsCount; yIndex++) {
+            for (var xIndex = cell.colIndex - maxR; xIndex <= (cell.colIndex + maxR) && xIndex < grid.colsCount; xIndex++) {
+                if(yIndex >= 0 && xIndex >= 0) {
+                    if((yIndex < ignoreY[0] || yIndex > ignoreY[1]) || (xIndex < ignoreX[0] || xIndex > ignoreX[1])) {
+                        if(yIndex != cell.rowIndex || xIndex != cell.colIndex){
+                            neighbors.push(grid.cells[yIndex][xIndex]);
+                        }
+                    }
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    function getNeighbors(particle) {
+        var neighbors = [];
+        var cell = particle.cell;
+        
+        for (var i = 0; i < cell.neighbors.length; i++) {
+            var neighborCell = cell.neighbors[i];
+            neighbors = neighbors.concat(neighborCell.particles.filter(function(n){
+                return n.connectionsMap[particle.id+""] == null;
+            }));
+        }
+        if(neighbors.length == 0 && onRequestAdditionalNeighborsCb != null){
+            neighbors = onRequestAdditionalNeighborsCb(particle);
+        }
+
+        return neighbors;
+    }
+
+    this.connectParticles = function() {
+        for (var cr = 0; cr < this.cells.length; cr++) {
+            var cellsRow = this.cells[cr];
+            for (var ci = 0; ci < cellsRow.length; ci++) {
+                var cell = cellsRow[ci];
+                for (var i = 0; i < cell.particles.length; i++) {
+                    var p = cell.particles[i];
+                    p.addChilds(getNeighbors(p).slice(0, cell.maxJoins));
+                }
+            }
+        }
+    }
+
+
+    this.iterateCells = function(cb) {
+        for (var cr = 0; cr < this.cells.length; cr++) {
+            var cellsRow = this.cells[cr];
+            for (var ci = 0; ci < cellsRow.length; ci++) {
+                var cell = cellsRow[ci];
+
+                cb(cell, this);
+            }
+        }
+    }
+
+    this.getAllParticles = function() {
+        var all = [];
+        this.iterateCells(function(cell){
+            all = all.concat(cell.particles);
+        });
+        return all;
+    }
+
+    this.update = function() {
+        this.updateParticlesInCells();
+        this.connectParticles();
+    }
+}
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = GridCell;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+
+
+function GridCell(id, rowIndex, colIndex, posLeftTop, width, height, maxJoins) {
+    'use strict';
+
+    this.isCustom = false;
+    this.isSelected = false;
+
+    this.id = id || 0;
+    this.width = width || 0;
+    this.height = height || 0;
+    this.rowIndex = rowIndex || 0;
+    this.colIndex = colIndex || 0;
+
+    this.maxJoins = maxJoins;
+
+    this.top = posLeftTop.y;
+    this.bottom = posLeftTop.y + height;
+    this.left = posLeftTop.x;
+    this.right = posLeftTop.x + width;
+    this.center = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.left + this.width / 2, this.top + this.height / 2);
+
+    this.hasError = false;
+
+    this.particles = [];
+    this.neighbors = [];
+
+    this.setParticles = function(particles) {
+        self = this;
+        this.particles = [].concat(particles.map(function(p){
+            p.cell = self;
+            return p;
+        }));
+    }
+
+    this.addParticle = function(particle) {
+        particle.cell = this;
+        this.particles.push(particle);
+    }
+
+    this.check = function() {
+        for(var i = 0; i < this.particles.length; i++) {
+            var posX = this.particles[i].position.x;
+            var posY = this.particles[i].position.y;
+            if(Math.ceil(posX) < this.left || Math.floor(posX) > this.right || Math.ceil(posY) < this.top || Math.floor(posY) > this.bottom){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    this.removeSelfFromNeighbors = function(ignorePredicate){
+        for(var i = 0; i < this.neighbors.length; i++) {
+            var n = this.neighbors[i];
+            n.neighbors = n.neighbors.filter(function(nn){
+                if(ignorePredicate != undefined && ignorePredicate(nn)){
+                    return true;
+                }
+                return this.id != nn.id;
+            },this);
+        }
+    }
+
+    this.removeGoneParticles = function() {
+        var removedParticles = [];
+        var savedParticles = [];
+        var posX = 0;
+        var posY = 0;
+        var p = null;
+        for(var i = 0; i < this.particles.length; i++) {
+            posX = Math.round(this.particles[i].position.x);
+            posY = Math.round(this.particles[i].position.y);
+            
+            if(posX < this.left || posX > this.right || posY < this.top || posY > this.bottom){
+                this.particles[i].cell = null;
+                removedParticles.push(this.particles[i]);
+                if(this.particles[i].onLeaving != null) {
+                    this.particles[i].onLeaving(this.particles[i]);
+                }
+            } else {
+                savedParticles.push(this.particles[i]);
+            }
+        }
+
+        if(savedParticles.length < this.particles.length) {
+            this.setParticles(savedParticles);
+        }
+
+        return removedParticles;
+    }
+}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+ /**
+  * Deep extend for object. Taken from here: https://gist.github.com/anvk/cf5630fab5cde626d42a
+  */
+function deepExtend(out) {
+    out = out || {};
+
+    for (var i = 1, len = arguments.length; i < len; ++i) {
+        var obj = arguments[i];
+
+        if (!obj) {
+            continue;
+        }
+
+        for (var key in obj) {
+            if (!obj.hasOwnProperty(key)) {
+                continue;
+            }
+
+            if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+                out[key] = deepExtend(out[key], obj[key]);
+                continue;
+            }
+
+            out[key] = obj[key];
+        }
+    }
+
+    return out;
+};
+
+function addEvent(el, eventType, handler) {
+    if(el == null){
+        return;
+    }
+    if (el.addEventListener) {
+        el.addEventListener(eventType, handler, false);
+    } else if (el.attachEvent) {
+        el.attachEvent('on' + eventType, handler);
+    } else {
+        el['on' + eventType] = handler;
+    }
+};
+
+function getAnimationFrame(callback){
+    if(window.requestAnimationFrame){
+        window.requestAnimationFrame(callback);
+    } else if( window.webkitRequestAnimationFrame){
+        window.webkitRequestAnimationFrame(callback);
+    } else if (window.mozRequestAnimationFrame){
+        window.mozRequestAnimationFrame(callback);
+    } else {
+        window.setTimeout(callback, 1000 / 60);
+    }
+};
+
+function getCurrentTime(){
+    var date = new Date();
+    return date.getTime();
+};
+
+function addPauseOnInactiveTab(startCb, stopCb) {
+    var hidden = "";
+    var visibilityChange = "";
+
+    if (typeof document.hidden !== "undefined") {
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+    }
+
+    if (typeof document[hidden] === "undefined") {
+        console.log("This footage requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API. Will be using fallback.");
+        addEvent(window, 'focus', startCb);
+        addEvent(window, 'blur', stopCb);
+    } else {
+        var handleVisibilityChange = function(){
+            if (document[hidden]) {
+                stopCb();
+            } else {
+                startCb();
+            }
+        };
+        addEvent(document, visibilityChange, handleVisibilityChange);
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    deepExtend: deepExtend,
+    addEvent: addEvent,
+    getAnimationFrame: getAnimationFrame,
+    getCurrentTime: getCurrentTime,
+    addPauseOnInactiveTab: addPauseOnInactiveTab
+});
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = Render;
+
+function Render(context, width, height, particles, grid, options) {
+    context.clearRect(0, 0, width, height);
+    context.lineWidth = 1.5;
+    var particle = null;
+
+    for(var i = 0; i < particles.length; i++){
+        particle = particles[i];
+        context.fillStyle = 'rgba(255, 255, 255, ' +particle.jointAlpha.toPrecision(3) + ')';
+        context.strokeStyle = 'rgba(255, 255, 255, ' + particle.linkAlpha.toPrecision(3) + ')';
+        context.beginPath();        
+        context.arc(particle.position.x, particle.position.y, particle.radius, 0, 2 * Math.PI);
+        context.fill();
+
+        for(var y = 0; y < particle.childs.length; y++){            
+            context.strokeStyle = 'rgba(255, 255, 255, ' + particle.connectionsMap[particle.childs[y].id+""].toPrecision(3) + ')';
+            context.beginPath();
+            context.moveTo(particle.position.x, particle.position.y);
+            context.lineTo(particle.childs[y].position.x, particle.childs[y].position.y);
+            context.stroke();
+        }
+    }
+
+    //drawTriangles(context, grid);
+
+    if(options.debug.showGrid) {
+        context.strokeStyle = 'green';
+        context.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        grid.iterateCells(function(cell) {
+            
+            context.font = "10px Arial";
+            context.fillText(cell.id, cell.left, cell.top + 10);
+            context.rect(cell.left, cell.top, cell.width, cell.height);
+            if(cell.isSelected) {
+                context.fillStyle = 'rgba(0, 0, 255, 0.3)';
+                context.fillRect(cell.left, cell.top, cell.width, cell.height);
+                context.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            }
+        });
+        context.stroke();
+    }
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function bounce(particles, delta, grid) {
+    for(var i = 0; i < particles.length; i++){
+        particles[i].update(delta);
+
+        if(particles[i].position.x > grid.width){
+            particles[i].velocity.x *= -1;
+            particles[i].position.x = grid.width;
+        }
+
+        if(particles[i].position.x < 0){
+            particles[i].velocity.x *= -1;
+            particles[i].position.x = 0;
+        }
+
+        if(particles[i].position.y > grid.height){
+            particles[i].velocity.y *= -1;
+            particles[i].position.y = grid.height;
+        }
+
+        if(particles[i].position.y < 0){
+            particles[i].velocity.y *= -1;
+            particles[i].position.y = 0;
+        }
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    bounce: bounce
+});
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = Particle;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+
+
+function Particle(id, x, y){
+    this.id = id;
+    this.position = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](x, y);
+    this.velocity = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */]();
+    this.speed = 0;
+    this.parentId = null;
+    this.connectionsMap = {};
+    this.childs = [];
+    this.linked = false;
+    this.distance = false;
+    this.alpha = 0.3;
+    this.radius = 2;
+    this.hasError = false;
+
+    this.connectionsAlphaInc = 0.01;
+
+    this.cell = null;
+    this.isCustom = false;
+    
+    this.jointAlpha = 0.8;
+    this.linkAlpha = this.alpha;
+    this.linkToParentAlpha = 0;
+
+    var acceleration = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](),
+        i = 0;
+
+    
+    this.riseError = function() {
+        this.hasError = true;
+        this.cell.hasError = true;
+    }
+
+    this.update = function(delta){
+        acceleration = acceleration.copyFrom(this.velocity);
+        acceleration.mul(this.speed * delta);
+        this.position.add(acceleration);
+        this.jointAlpha = 0.8;
+        this.linkAlpha = this.alpha;
+    }
+
+    this.addChilds = function(childs){
+        var newAlpha = 0;
+        var child = null;
+        var newConnections = {};
+        var newChilds = [];
+        for (var i = 0; i < childs.length; i++) {
+            child = childs[i];
+            newAlpha = this.connectionsMap[child.id+""] != null? this.connectionsMap[child.id+""] + this.connectionsAlphaInc: 0;
+            newConnections[child.id+""] = newAlpha <= 0.3? newAlpha: 0.3;
+            newChilds.push(child);
+        }
+        this.connectionsMap = newConnections;
+        this.childs = newChilds;
+        
+    }
+    this.removeChild = function(link){
+        for(i = 0; i < this.childs.length; i++){
+            if(this.childs[i] === link){
+                this.childs.splice(i,1);
+            }
+        }
+    }
+
+    this.onLeaving = null;
+};
+
+/***/ })
+/******/ ]);

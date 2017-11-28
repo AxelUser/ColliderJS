@@ -14,6 +14,6 @@ module.exports = {
     new WebpackCopyAfterBuildPlugin({
       main: '../demo/js/collider.js'
     }),
-    new webpack.optimize.UglifyJsPlugin()
+    //new webpack.optimize.UglifyJsPlugin()
   ]
 };
