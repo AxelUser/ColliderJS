@@ -5,11 +5,12 @@ export default function Grid(width, height, options) {
     'use strict';
     
     var opt = options || {};
+    opt.pixelRatio = opt.pixelRatio || 1;
 
     this.cells = [];
 
-    this.cellFixedWidth = 32;
-    this.cellFixedHeight = 32;
+    this.cellFixedWidth = 32 * opt.pixelRatio;
+    this.cellFixedHeight = 32 * opt.pixelRatio;
 
     this.debugMode = opt.enableDebug || false;
 
@@ -22,9 +23,6 @@ export default function Grid(width, height, options) {
     this.cellsSearchRadius = 1;
     this.cellsIgnoreRadius = 0;
     this.maxJoins = opt.maxJoins || 1;
-    this.maxNeighborsToConnect = 5;
-    
-    this.distanceErrorThreshold = 200;
 
     // Extesions
     var onAfterGridCreationCb = opt.onAfterGridCreation;
@@ -74,8 +72,7 @@ export default function Grid(width, height, options) {
         }
     }
 
-    this.addParticles = function(particleFactoryCb) {
-        var particles = particleFactoryCb(this);
+    this.addParticles = function(particles) {       
         console.log("Particles: " + particles.length);
         for(var i = 0; i < particles.length; i++) {
             var cell = this.getCellForParticle(particles[i]);

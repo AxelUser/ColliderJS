@@ -159,21 +159,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 function Collider(canvasID, options){
     
     /**Canvas context */
-    var __ctx;
-    var __canvas;
+    var _ctx;
+    var _canvas;
+    var _pixelRatio;
 
-    var __width = 0;
-    var __height = 0;
+    var _width = 0;
+    var _height = 0;
 
-    var __grid = null;
-    var __particles = [];
+    var _grid = null;
+    var _particles = [];
 
-    var __fn = {};
+    var _fn = {};
 
     var newTime = 0;
     var savedTime = 0;
     
-    var __defs = {
+    var _defs = {
         grid: {
             //sizes
             cellFixedWidth: 32,
@@ -203,26 +204,34 @@ function Collider(canvasID, options){
     };
 
     if(options != null) {
-        __defs = __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].deepExtend(__defs, options)
+        _defs = __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].deepExtend(_defs, options)
+    }
+
+    _fn.formatParticles = function(particlesFactory) {
+        var partiles = particlesFactory(_width, _height, _pixelRatio).map(function(p){
+            p.speed *= _pixelRatio;
+            return p;
+        });
+        return partiles;
     }
 
     //todo: check for concurrency issues
-    __fn.addParticles = function(particlesFactory){
-        var p = particlesFactory(__grid);
-        __grid.addParticles(p);
-        __particles = __grid.getAllParticles();
+    _fn.addParticles = function(particlesFactory){
+        var p = _fn.formatParticles(particlesFactory);
+        _grid.addParticles(p);
+        _particles = _grid.getAllParticles();
     };
 
-    __fn.pushParticle = function(x, y){
+    _fn.pushParticle = function(x, y){
         
     };
 
-    __fn.update = function(delta) {
-        __WEBPACK_IMPORTED_MODULE_3__mover__["a" /* default */].bounce(__particles, delta, __grid);
-        __grid.update();
+    _fn.update = function(delta) {
+        __WEBPACK_IMPORTED_MODULE_3__mover__["a" /* default */].bounce(_particles, delta, _grid);
+        _grid.update();        
     };    
 
-    __fn.loop = function() {
+    _fn.loop = function() {
         newTime = __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].getCurrentTime();
         var delta = (newTime - savedTime) / 100;
         savedTime = newTime;
@@ -231,56 +240,63 @@ function Collider(canvasID, options){
             delta = 0.2;
         }
 
-        __fn.update(delta);
-        __fn.draw();
-        __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].getAnimationFrame(__fn.loop);
+        _fn.update(delta);
+        _fn.draw();
+        __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].getAnimationFrame(_fn.loop);
     }
 
-    __fn.draw = function() {
-        Object(__WEBPACK_IMPORTED_MODULE_2__render__["a" /* default */])(__ctx, __width, __height, __particles, __grid, __defs);
+    _fn.draw = function() {
+        Object(__WEBPACK_IMPORTED_MODULE_2__render__["a" /* default */])(_ctx, _width, _height, _pixelRatio, _particles, _grid, _defs);
     };
 
-    __fn.initCanvas = function() {        
-        __ctx = __canvas.getContext('2d');
+    _fn.initCanvas = function() {        
+        _ctx = _canvas.getContext('2d');
 
         //todo: add fullscreen setting
-        __width = __canvas.width = window.innerWidth;
-        __height = __canvas.height = window.innerHeight;
+        _pixelRatio = __WEBPACK_IMPORTED_MODULE_1__tools__["a" /* default */].getPixelRatio();
+        _canvas.width = window.innerWidth;
+        _canvas.height = window.innerHeight;
+
+        _width = _canvas.width;
+        _height = _canvas.height;
     };
 
-    __fn.initGrid = function() {
-        __grid = new __WEBPACK_IMPORTED_MODULE_0__grid__["a" /* default */](__width, __height);
-        __grid.initGrid();
-        if(__defs.handlers.particlesFactory != null) {
-            __grid.addParticles(__defs.handlers.particlesFactory);
+    _fn.initGrid = function() {
+        var o = {
+            pixelRatio: _pixelRatio
+        }
+        _grid = new __WEBPACK_IMPORTED_MODULE_0__grid__["a" /* default */](_width, _height, o);
+        _grid.initGrid();
+        if(_defs.handlers.particlesFactory != null) {
+            _grid.addParticles(_fn.formatParticles(_defs.handlers.particlesFactory));
         }        
-        __particles = __grid.getAllParticles();
+        _particles = _grid.getAllParticles();
     };
 
-    __fn.initCollider = function() {
-        __canvas = document.getElementById(canvasID);
-        __fn.initCanvas();
-        __fn.initGrid();
-        __fn.loop();
+    _fn.initCollider = function() {
+        _canvas = document.getElementById(canvasID);
+        _fn.initCanvas();
+        _fn.initGrid();
+        _fn.loop();
     };
 
-    this.pushParticle = __fn.pushParticle;
-    this.addParticles = __fn.addParticles;
+    this.pushParticle = _fn.pushParticle;
+    this.addParticles = _fn.addParticles;
 
-    __fn.initCollider();
+    _fn.initCollider();
 }
 
 Collider.createSimple = function(canvasID){
     var o = {
         handlers: {
-            particlesFactory: function(grid) {
+            particlesFactory: function(canvasWidth, canvasHeight, ratio) {
                 var particles = [];
-                var count = 150;
+                var count = canvasWidth * canvasHeight / (10000 * ratio);
                 var x = 0,
                     y = 0;
                 for(var i = 0; i < count; i++){
-                    x = Math.random() * window.innerWidth;
-                    y = Math.random() * window.innerHeight;
+                    x = Math.random() * canvasWidth;
+                    y = Math.random() * canvasHeight;
         
                     var particle = new __WEBPACK_IMPORTED_MODULE_4__particle__["a" /* default */](i, x, y);
                     particle.velocity.x = Math.random() -0.5;
@@ -315,11 +331,12 @@ function Grid(width, height, options) {
     'use strict';
     
     var opt = options || {};
+    opt.pixelRatio = opt.pixelRatio || 1;
 
     this.cells = [];
 
-    this.cellFixedWidth = 32;
-    this.cellFixedHeight = 32;
+    this.cellFixedWidth = 32 * opt.pixelRatio;
+    this.cellFixedHeight = 32 * opt.pixelRatio;
 
     this.debugMode = opt.enableDebug || false;
 
@@ -332,9 +349,6 @@ function Grid(width, height, options) {
     this.cellsSearchRadius = 1;
     this.cellsIgnoreRadius = 0;
     this.maxJoins = opt.maxJoins || 1;
-    this.maxNeighborsToConnect = 5;
-    
-    this.distanceErrorThreshold = 200;
 
     // Extesions
     var onAfterGridCreationCb = opt.onAfterGridCreation;
@@ -384,8 +398,7 @@ function Grid(width, height, options) {
         }
     }
 
-    this.addParticles = function(particleFactoryCb) {
-        var particles = particleFactoryCb(this);
+    this.addParticles = function(particles) {       
         console.log("Particles: " + particles.length);
         for(var i = 0; i < particles.length; i++) {
             var cell = this.getCellForParticle(particles[i]);
@@ -730,12 +743,21 @@ function addPauseOnInactiveTab(startCb, stopCb) {
     }
 }
 
+function getPixelRatio() {
+    if(window.devicePixelRatio != null && window.devicePixelRatio > 1){
+        return window.devicePixelRatio;
+    } else {
+        return 1;
+    }
+}
+
 /* harmony default export */ __webpack_exports__["a"] = ({
     deepExtend: deepExtend,
     addEvent: addEvent,
     getAnimationFrame: getAnimationFrame,
     getCurrentTime: getCurrentTime,
-    addPauseOnInactiveTab: addPauseOnInactiveTab
+    addPauseOnInactiveTab: addPauseOnInactiveTab,
+    getPixelRatio: getPixelRatio
 });
 
 /***/ }),
@@ -745,9 +767,9 @@ function addPauseOnInactiveTab(startCb, stopCb) {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = Render;
 
-function Render(context, width, height, particles, grid, options) {
+function Render(context, width, height, pixelRatio, particles, grid, options) {
     context.clearRect(0, 0, width, height);
-    context.lineWidth = 1.5;
+    context.lineWidth = 1.5 * pixelRatio;
     var particle = null;
 
     for(var i = 0; i < particles.length; i++){
@@ -755,7 +777,7 @@ function Render(context, width, height, particles, grid, options) {
         context.fillStyle = 'rgba(255, 255, 255, ' +particle.jointAlpha.toPrecision(3) + ')';
         context.strokeStyle = 'rgba(255, 255, 255, ' + particle.linkAlpha.toPrecision(3) + ')';
         context.beginPath();        
-        context.arc(particle.position.x, particle.position.y, particle.radius, 0, 2 * Math.PI);
+        context.arc(particle.position.x, particle.position.y, particle.radius * pixelRatio, 0, 2 * Math.PI);
         context.fill();
 
         for(var y = 0; y < particle.childs.length; y++){            
@@ -774,8 +796,8 @@ function Render(context, width, height, particles, grid, options) {
         context.fillStyle = 'rgba(255, 255, 255, 0.5)';
         grid.iterateCells(function(cell) {
             
-            context.font = "10px Arial";
-            context.fillText(cell.id, cell.left, cell.top + 10);
+            context.font = 10*pixelRatio+"px Arial";
+            context.fillText(cell.id, cell.left, cell.top + 10 * pixelRatio);
             context.rect(cell.left, cell.top, cell.width, cell.height);
             if(cell.isSelected) {
                 context.fillStyle = 'rgba(0, 0, 255, 0.3)';

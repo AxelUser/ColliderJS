@@ -10,6 +10,7 @@
     "webpack-copy-after-build-plugin": "^1.0.1"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "watch": "webpack --config webpack.config.js --progress --colors --watch"
   }
 }

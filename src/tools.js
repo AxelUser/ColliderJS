@@ -89,10 +89,19 @@ function addPauseOnInactiveTab(startCb, stopCb) {
     }
 }
 
+function getPixelRatio() {
+    if(window.devicePixelRatio != null && window.devicePixelRatio > 1){
+        return window.devicePixelRatio;
+    } else {
+        return 1;
+    }
+}
+
 export default {
     deepExtend: deepExtend,
     addEvent: addEvent,
     getAnimationFrame: getAnimationFrame,
     getCurrentTime: getCurrentTime,
-    addPauseOnInactiveTab: addPauseOnInactiveTab
+    addPauseOnInactiveTab: addPauseOnInactiveTab,
+    getPixelRatio: getPixelRatio
 }

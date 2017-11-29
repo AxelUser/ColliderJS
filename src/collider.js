@@ -10,21 +10,22 @@ import Particle from './particle';
 function Collider(canvasID, options){
     
     /**Canvas context */
-    var __ctx;
-    var __canvas;
+    var _ctx;
+    var _canvas;
+    var _pixelRatio;
 
-    var __width = 0;
-    var __height = 0;
+    var _width = 0;
+    var _height = 0;
 
-    var __grid = null;
-    var __particles = [];
+    var _grid = null;
+    var _particles = [];
 
-    var __fn = {};
+    var _fn = {};
 
     var newTime = 0;
     var savedTime = 0;
     
-    var __defs = {
+    var _defs = {
         grid: {
             //sizes
             cellFixedWidth: 32,
@@ -54,26 +55,34 @@ function Collider(canvasID, options){
     };
 
     if(options != null) {
-        __defs = Tools.deepExtend(__defs, options)
+        _defs = Tools.deepExtend(_defs, options)
+    }
+
+    _fn.formatParticles = function(particlesFactory) {
+        var partiles = particlesFactory(_width, _height, _pixelRatio).map(function(p){
+            p.speed *= _pixelRatio;
+            return p;
+        });
+        return partiles;
     }
 
     //todo: check for concurrency issues
-    __fn.addParticles = function(particlesFactory){
-        var p = particlesFactory(__grid);
-        __grid.addParticles(p);
-        __particles = __grid.getAllParticles();
+    _fn.addParticles = function(particlesFactory){
+        var p = _fn.formatParticles(particlesFactory);
+        _grid.addParticles(p);
+        _particles = _grid.getAllParticles();
     };
 
-    __fn.pushParticle = function(x, y){
+    _fn.pushParticle = function(x, y){
         
     };
 
-    __fn.update = function(delta) {
-        Mover.bounce(__particles, delta, __grid);
-        __grid.update();
+    _fn.update = function(delta) {
+        Mover.bounce(_particles, delta, _grid);
+        _grid.update();        
     };    
 
-    __fn.loop = function() {
+    _fn.loop = function() {
         newTime = Tools.getCurrentTime();
         var delta = (newTime - savedTime) / 100;
         savedTime = newTime;
@@ -82,56 +91,63 @@ function Collider(canvasID, options){
             delta = 0.2;
         }
 
-        __fn.update(delta);
-        __fn.draw();
-        Tools.getAnimationFrame(__fn.loop);
+        _fn.update(delta);
+        _fn.draw();
+        Tools.getAnimationFrame(_fn.loop);
     }
 
-    __fn.draw = function() {
-        render(__ctx, __width, __height, __particles, __grid, __defs);
+    _fn.draw = function() {
+        render(_ctx, _width, _height, _pixelRatio, _particles, _grid, _defs);
     };
 
-    __fn.initCanvas = function() {        
-        __ctx = __canvas.getContext('2d');
+    _fn.initCanvas = function() {        
+        _ctx = _canvas.getContext('2d');
 
         //todo: add fullscreen setting
-        __width = __canvas.width = window.innerWidth;
-        __height = __canvas.height = window.innerHeight;
+        _pixelRatio = Tools.getPixelRatio();
+        _canvas.width = window.innerWidth;
+        _canvas.height = window.innerHeight;
+
+        _width = _canvas.width;
+        _height = _canvas.height;
     };
 
-    __fn.initGrid = function() {
-        __grid = new Grid(__width, __height);
-        __grid.initGrid();
-        if(__defs.handlers.particlesFactory != null) {
-            __grid.addParticles(__defs.handlers.particlesFactory);
+    _fn.initGrid = function() {
+        var o = {
+            pixelRatio: _pixelRatio
+        }
+        _grid = new Grid(_width, _height, o);
+        _grid.initGrid();
+        if(_defs.handlers.particlesFactory != null) {
+            _grid.addParticles(_fn.formatParticles(_defs.handlers.particlesFactory));
         }        
-        __particles = __grid.getAllParticles();
+        _particles = _grid.getAllParticles();
     };
 
-    __fn.initCollider = function() {
-        __canvas = document.getElementById(canvasID);
-        __fn.initCanvas();
-        __fn.initGrid();
-        __fn.loop();
+    _fn.initCollider = function() {
+        _canvas = document.getElementById(canvasID);
+        _fn.initCanvas();
+        _fn.initGrid();
+        _fn.loop();
     };
 
-    this.pushParticle = __fn.pushParticle;
-    this.addParticles = __fn.addParticles;
+    this.pushParticle = _fn.pushParticle;
+    this.addParticles = _fn.addParticles;
 
-    __fn.initCollider();
+    _fn.initCollider();
 }
 
 Collider.createSimple = function(canvasID){
     var o = {
         handlers: {
-            particlesFactory: function(grid) {
+            particlesFactory: function(canvasWidth, canvasHeight, ratio) {
                 var particles = [];
-                var count = 150;
+                var count = canvasWidth * canvasHeight / (10000 * ratio);
                 var x = 0,
                     y = 0;
                 for(var i = 0; i < count; i++){
-                    x = Math.random() * window.innerWidth;
-                    y = Math.random() * window.innerHeight;
+                    x = Math.random() * canvasWidth;
+                    y = Math.random() * canvasHeight;
         
                     var particle = new Particle(i, x, y);
                     particle.velocity.x = Math.random() -0.5;
