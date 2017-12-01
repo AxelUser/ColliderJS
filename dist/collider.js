@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -141,15 +141,12 @@ function Vector(x, y){
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__grid__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tools__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__render__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mover__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__particle__ = __webpack_require__(7);
-
-
-
+/* harmony export (immutable) */ __webpack_exports__["a"] = Collider;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__grid__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tools__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__render__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mover__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__particle__ = __webpack_require__(2);
 
 
 
@@ -157,7 +154,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 function Collider(canvasID, options){
-    
+    "use strict";
+
     /**Canvas context */
     var _ctx;
     var _canvas;
@@ -286,44 +284,103 @@ function Collider(canvasID, options){
     _fn.initCollider();
 }
 
-Collider.createSimple = function(canvasID){
-    var o = {
-        handlers: {
-            particlesFactory: function(canvasWidth, canvasHeight, ratio) {
-                var particles = [];
-                var count = canvasWidth * canvasHeight / (10000 * ratio);
-                var x = 0,
-                    y = 0;
-                for(var i = 0; i < count; i++){
-                    x = Math.random() * canvasWidth;
-                    y = Math.random() * canvasHeight;
-        
-                    var particle = new __WEBPACK_IMPORTED_MODULE_4__particle__["a" /* default */](i, x, y);
-                    particle.velocity.x = Math.random() -0.5;
-                    particle.velocity.y = Math.random() -0.5;
-                    particle.velocity.nor();
-                    particle.speed = 2;
-                    particles.push(particle);
-                }
-        
-                return particles;
-            }
-        }
-    }
-
-    return new Collider(canvasID, o);
-}
-
-window.ColliderJS = Collider;
-
 /***/ }),
 /* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = Particle;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+
+
+function Particle(id, x, y){
+    this.id = id;
+    this.position = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](x, y);
+    this.velocity = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */]();
+    this.speed = 0;
+    this.parentId = null;
+    this.connectionsMap = {};
+    this.childs = [];
+    this.linked = false;
+    this.distance = false;
+    this.alpha = 0.3;
+    this.radius = 2;
+    this.hasError = false;
+
+    this.connectionsAlphaInc = 0.01;
+
+    this.cell = null;
+    this.isCustom = false;
+    
+    this.jointAlpha = 0.8;
+    this.linkAlpha = this.alpha;
+    this.linkToParentAlpha = 0;
+
+    var acceleration = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](),
+        i = 0;
+
+    
+    this.riseError = function() {
+        this.hasError = true;
+        this.cell.hasError = true;
+    }
+
+    this.update = function(delta){
+        acceleration = acceleration.copyFrom(this.velocity);
+        acceleration.mul(this.speed * delta);
+        this.position.add(acceleration);
+        this.jointAlpha = 0.8;
+        this.linkAlpha = this.alpha;
+    }
+
+    this.addChilds = function(childs){
+        var newAlpha = 0;
+        var child = null;
+        var newConnections = {};
+        var newChilds = [];
+        for (var i = 0; i < childs.length; i++) {
+            child = childs[i];
+            newAlpha = this.connectionsMap[child.id+""] != null? this.connectionsMap[child.id+""] + this.connectionsAlphaInc: 0;
+            newConnections[child.id+""] = newAlpha <= 0.3? newAlpha: 0.3;
+            newChilds.push(child);
+        }
+        this.connectionsMap = newConnections;
+        this.childs = newChilds;
+        
+    }
+    this.removeChild = function(link){
+        for(i = 0; i < this.childs.length; i++){
+            if(this.childs[i] === link){
+                this.childs.splice(i,1);
+            }
+        }
+    }
+
+    this.onLeaving = null;
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collider__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__readyColliders__ = __webpack_require__(9);
+
+
+
+window.window.ColliderJS = __WEBPACK_IMPORTED_MODULE_0__collider__["a" /* default */];
+Object(__WEBPACK_IMPORTED_MODULE_1__readyColliders__["a" /* default */])();
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = Grid;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cell__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cell__ = __webpack_require__(5);
 
 
 
@@ -549,7 +606,7 @@ function Grid(width, height, options) {
 }
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -648,7 +705,7 @@ function GridCell(id, rowIndex, colIndex, posLeftTop, width, height, maxJoins) {
 }
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -761,7 +818,7 @@ function getPixelRatio() {
 });
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -810,7 +867,7 @@ function Render(context, width, height, pixelRatio, particles, grid, options) {
 }
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -845,79 +902,45 @@ function bounce(particles, delta, grid) {
 });
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = Particle;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+/* harmony export (immutable) */ __webpack_exports__["a"] = initColliders;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collider__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__particle__ = __webpack_require__(2);
 
 
-function Particle(id, x, y){
-    this.id = id;
-    this.position = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](x, y);
-    this.velocity = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */]();
-    this.speed = 0;
-    this.parentId = null;
-    this.connectionsMap = {};
-    this.childs = [];
-    this.linked = false;
-    this.distance = false;
-    this.alpha = 0.3;
-    this.radius = 2;
-    this.hasError = false;
 
-    this.connectionsAlphaInc = 0.01;
-
-    this.cell = null;
-    this.isCustom = false;
-    
-    this.jointAlpha = 0.8;
-    this.linkAlpha = this.alpha;
-    this.linkToParentAlpha = 0;
-
-    var acceleration = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](),
-        i = 0;
-
-    
-    this.riseError = function() {
-        this.hasError = true;
-        this.cell.hasError = true;
-    }
-
-    this.update = function(delta){
-        acceleration = acceleration.copyFrom(this.velocity);
-        acceleration.mul(this.speed * delta);
-        this.position.add(acceleration);
-        this.jointAlpha = 0.8;
-        this.linkAlpha = this.alpha;
-    }
-
-    this.addChilds = function(childs){
-        var newAlpha = 0;
-        var child = null;
-        var newConnections = {};
-        var newChilds = [];
-        for (var i = 0; i < childs.length; i++) {
-            child = childs[i];
-            newAlpha = this.connectionsMap[child.id+""] != null? this.connectionsMap[child.id+""] + this.connectionsAlphaInc: 0;
-            newConnections[child.id+""] = newAlpha <= 0.3? newAlpha: 0.3;
-            newChilds.push(child);
-        }
-        this.connectionsMap = newConnections;
-        this.childs = newChilds;
-        
-    }
-    this.removeChild = function(link){
-        for(i = 0; i < this.childs.length; i++){
-            if(this.childs[i] === link){
-                this.childs.splice(i,1);
+function initColliders() {
+    __WEBPACK_IMPORTED_MODULE_0__collider__["a" /* default */].createSimple = function(canvasID){
+        var o = {
+            handlers: {
+                particlesFactory: function(canvasWidth, canvasHeight, ratio) {
+                    var particles = [];
+                    var count = canvasWidth * canvasHeight / (10000 * ratio);
+                    var x = 0,
+                        y = 0;
+                    for(var i = 0; i < count; i++){
+                        x = Math.random() * canvasWidth;
+                        y = Math.random() * canvasHeight;
+            
+                        var particle = new __WEBPACK_IMPORTED_MODULE_1__particle__["a" /* default */](i, x, y);
+                        particle.velocity.x = Math.random() -0.5;
+                        particle.velocity.y = Math.random() -0.5;
+                        particle.velocity.nor();
+                        particle.speed = 2;
+                        particles.push(particle);
+                    }
+            
+                    return particles;
+                }
             }
         }
+    
+        return new __WEBPACK_IMPORTED_MODULE_0__collider__["a" /* default */](canvasID, o);
     }
-
-    this.onLeaving = null;
-};
+}
 
 /***/ })
 /******/ ]);

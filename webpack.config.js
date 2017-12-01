@@ -4,7 +4,7 @@ const WebpackCopyAfterBuildPlugin = require('webpack-copy-after-build-plugin');
 
 module.exports = {
   entry: {
-    main: './src/collider.js'
+    main: './src/main.js'
   },
   output: {
     filename: 'collider.js',
