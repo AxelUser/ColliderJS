@@ -6,6 +6,7 @@
   "author": "Alexey Maltsev",
   "license": "MIT",
   "devDependencies": {
+    "rollup": "^0.56.4",
     "webpack": "^3.8.1",
     "webpack-copy-after-build-plugin": "^1.0.1"
   },
