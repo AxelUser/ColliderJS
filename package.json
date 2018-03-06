@@ -7,11 +7,12 @@
   "license": "MIT",
   "devDependencies": {
     "rollup": "^0.56.4",
+    "rollup-plugin-uglify": "^3.0.0",
     "webpack": "^3.8.1",
     "webpack-copy-after-build-plugin": "^1.0.1"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "watch": "webpack --config webpack.config.js --progress --colors --watch"
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
   }
 }
